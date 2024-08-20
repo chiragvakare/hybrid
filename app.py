@@ -28,7 +28,6 @@ if index_name not in pc.list_indexes().names():
 index = pc.Index(index_name)
 
 # Load environment variables
-
 os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
 # Set up embeddings and BM25 encoder
@@ -56,12 +55,67 @@ retriever = PineconeHybridSearchRetriever(embeddings=embeddings, sparse_encoder=
 retriever.add_texts(sentences)
 
 # Streamlit app layout
-st.title("Hybrid Search with Langchain and Pinecone")
+st.set_page_config(page_title="Hybrid Search", page_icon="🔍", layout="centered")
+
+# Custom CSS for styling
+st.markdown("""
+    <style>
+        .reportview-container {
+            background-color: #f0f8ff;
+        }
+        .title {
+            background-color: #ff5733;
+            padding: 1em;
+            text-align: center;
+            font-size: 1.8em;
+            color: white;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-bottom: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .stButton > button {
+            background-color: #ff5733;
+            color: white;
+            border-radius: 12px;
+            padding: 0.8em 1.5em;
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .stButton > button:hover {
+            background-color: white;
+            transform: scale(1.05);
+        }
+            
+        .title:hover {
+            background-color: white;
+            transform: scale(1.05);
+            color: #ff5733;
+        }
+        .stTextInput > div > input {
+            border: 3px solid #0073e6;
+            border-radius: 12px;
+            padding: 0.8em;
+            font-size: 1.2em;
+        }
+        .result {
+            background-color: #ffffff;
+            color: #4b0082;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="title">Hybrid Search with Langchain and Pinecone</h1>', unsafe_allow_html=True)
 
 query = st.text_input("Enter your query:")
 if st.button("Search"):
     results = retriever.invoke(query)
     if results:
-        st.write("Top Search Result:", results[0].page_content)
+        st.markdown(f"<div class='result'>Top Search Result: {results[0].page_content}</div>", unsafe_allow_html=True)
     else:
-        st.write("No results found.")
+        st.markdown("<div class='result'>No results found.</div>", unsafe_allow_html=True)
